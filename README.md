@@ -2,6 +2,10 @@
 
 **MouseRec** is a macOS app that lets you **record** your mouse moves / clicks / keystrokes and **replay** them automatically, with control over speed and number of repetitions.
 
+You can get the app on the Mac App Store:
+
+- [MouseRec on the Mac App Store](https://apps.apple.com/fr/app/mouserec/id6755159132?mt=12)
+
 This repository contains:
 - the Xcode project (`MouseRec.xcodeproj`)
 - the application source code (`MouseRec/`)
