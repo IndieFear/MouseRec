@@ -1,213 +1,213 @@
 ## MouseRec 🖱️⌨️
 
-**MouseRec** est une application macOS qui permet d’**enregistrer** vos mouvements de souris / clics / frappes clavier, puis de les **rejouer** automatiquement, avec contrôle de la vitesse et du nombre de répétitions.
+**MouseRec** is a macOS app that lets you **record** your mouse moves / clicks / keystrokes and **replay** them automatically, with control over speed and number of repetitions.
 
-Ce dépôt contient :
-- le projet Xcode (`MouseRec.xcodeproj`)
-- le code source de l’app (`MouseRec/`)
-- les tests (`MouseRecTests/`, `MouseRecUITests/`)
-
----
-
-## Fonctionnalités principales
-
-- **Enregistrement global**
-  - Capture des mouvements de souris, clics, glisser-déposer, touches clavier
-  - Fonctionne même quand l’app est en arrière‑plan (avec les bonnes permissions)
-
-- **Lecture automatisée**
-  - Rejoue la séquence exactement comme enregistrée
-  - Contrôle de la **vitesse** (x1, x2, x3, x5)
-  - Modes de **répétition** : une fois, boucle infinie, nombre personnalisé
-
-- **Raccourcis globaux**
-  - `⌘⇧R` : démarrer / arrêter l’enregistrement
-  - `⌘⇧P` : démarrer / arrêter la lecture
-  - Les hotkeys ne sont **pas** enregistrés dans la séquence (pour éviter les boucles infinies)
-
-- **Intégration Menu Bar**
-  - Icône dans la barre de menu avec état visuel :
-    - 🐭 : idle
-    - 🔴 : enregistrement
-    - 🟢 : lecture
-  - Possibilité de cacher la fenêtre principale et de ne garder que l’icône de barre de menu
+This repository contains:
+- the Xcode project (`MouseRec.xcodeproj`)
+- the application source code (`MouseRec/`)
+- the tests (`MouseRecTests/`, `MouseRecUITests/`)
 
 ---
 
-## Prérequis
+## Features
 
-- **macOS** : 11.0 ou supérieur
-- **Xcode** : 15+ (idéalement la version utilisée dans ce repo)
-- Compte développeur Apple (si vous voulez signer / distribuer l’app)
+- **Global recording**
+  - Captures mouse moves, clicks, drags and keyboard events
+  - Works even when the app is in the background (with proper permissions)
+
+- **Automatic playback**
+  - Replays the recorded sequence exactly as captured
+  - Playback **speed control**: x1, x2, x3, x5
+  - **Repeat modes**: once, infinite loop, custom number of repetitions
+
+- **Global hotkeys**
+  - `⌘⇧R` – start / stop recording
+  - `⌘⇧P` – start / stop playback
+  - Hotkey events are **not** recorded in the sequence (to avoid infinite loops)
+
+- **Menu bar integration**
+  - Menu bar icon with visual state:
+    - 🐭 – idle
+    - 🔴 – recording
+    - 🟢 – playing
+  - Can hide the main window and run only from the menu bar
 
 ---
 
-## Installation et lancement rapide
+## Requirements
 
-1. **Cloner le dépôt**
+- **macOS**: 11.0 or later
+- **Xcode**: 15+ (ideally the version used for this repo)
+- Apple Developer account if you want to sign / distribute the app
+
+---
+
+## Quick start
+
+1. **Clone the repository**
 
 ```bash
 git clone https://github.com/IndieFear/MouseRec.git
 cd MouseRec/MouseRec
 ```
 
-2. **Ouvrir le projet dans Xcode**
+2. **Open the project in Xcode**
 
-Ouvrez `MouseRec.xcodeproj`, sélectionnez la cible `MouseRec`.
+Open `MouseRec.xcodeproj` and select the `MouseRec` target.
 
-3. **Configurer les capacités (entitlements)**
+3. **Configure capabilities (entitlements)**
 
-Voir `CONFIGURATION.md` pour le détail, mais en résumé :
-- Dans **Signing & Capabilities**, désactiver / supprimer **App Sandbox**
-- Vérifier que le fichier `MouseRec.entitlements` est bien associé à la cible
+See `CONFIGURATION.md` for full details. In short:
+- In **Signing & Capabilities**, remove or disable **App Sandbox**
+- Make sure `MouseRec.entitlements` is attached to the target
 
-4. **Vérifier `Info.plist`**
+4. **Check `Info.plist`**
 
-Assurez‑vous que :
-- le chemin **Info.plist File** pointe vers `MouseRec/Info.plist`
-- la clé `ITSAppUsesNonExemptEncryption` est à `NO` (si vous n’utilisez que le chiffrement système)
+Make sure:
+- **Info.plist File** points to `MouseRec/Info.plist`
+- `ITSAppUsesNonExemptEncryption` is set to `NO` (if you only use system‑provided crypto)
 
-5. **Lancer l’app**
+5. **Run the app**
 
-- Choisissez votre Mac comme cible
-- `Cmd + R` pour lancer
-- Au premier lancement, macOS demandera les **permissions d’accessibilité** (voir section suivante)
-
----
-
-## Permissions d’accessibilité (obligatoire)
-
-Pour enregistrer et rejouer des événements globaux, MouseRec doit être autorisée dans :
-**Réglages Système → Confidentialité et sécurité → Accessibilité**.
-
-Le flux est automatisé côté app (voir aussi `CONFIGURATION.md`) :
-
-1. Au premier lancement, MouseRec essaie de poster un petit `CGEvent`
-2. Cela force macOS à **ajouter MouseRec dans la liste Accessibilité**
-3. L’app appelle `AXIsProcessTrustedWithOptions` avec l’option de prompt
-4. Vous voyez :
-   - un popup système Apple demandant les permissions
-   - une alerte dans l’app avec un bouton **Open Settings**
-5. Cliquez sur **Open Settings** :
-   - les réglages s’ouvrent sur la page Accessibilité
-   - cochez la case **MouseRec**
-   - redémarrez l’app
-
-Sans ces permissions :
-- l’enregistrement / lecture ne fonctionnera pas
-- les raccourcis globaux peuvent être bloqués
+- Select your Mac as the run destination
+- Press `Cmd + R`
+- On first launch, macOS will ask for **Accessibility** permissions (see below)
 
 ---
 
-## Utilisation
+## Accessibility permissions (required)
 
-### Enregistrer une séquence
+To record and replay global events, MouseRec must be allowed under:
+**System Settings → Privacy & Security → Accessibility**.
 
-1. Lancer l’app
-2. Cliquer sur **Record** ou utiliser `⌘⇧R`
-3. Effectuer vos actions (souris + clavier)
-4. Cliquer de nouveau sur **Record** ou `⌘⇧R` pour arrêter  
-   → le nombre d’événements enregistrés apparaît dans l’interface / la barre de menu.
+The app automates the flow (see also `CONFIGURATION.md`):
 
-### Configurer la lecture
+1. On first launch, MouseRec posts a small `CGEvent`
+2. This forces macOS to **add MouseRec to the Accessibility list**
+3. The app calls `AXIsProcessTrustedWithOptions` with the prompt option
+4. You will see:
+   - a system popup asking for permissions
+   - an in‑app alert with an **Open Settings** button
+5. Click **Open Settings**:
+   - System Settings opens on the Accessibility page
+   - enable the checkbox for **MouseRec**
+   - restart the app
 
-- **Speed** : choisir x1, x2, x3 ou x5
-- **Repeat** :
-  - `Once` : une seule lecture
-  - `Loop` : boucle infinie (arrêt manuel)
-  - `Custom` : définir un nombre de répétitions (1–99)
-
-### Lancer la lecture
-
-1. S’assurer qu’il y a au moins un enregistrement
-2. Cliquer sur **Play** ou utiliser `⌘⇧P`
-3. Pour arrêter : cliquer de nouveau ou refaire `⌘⇧P`
-
-### Mode Menu Bar
-
-- Cliquer sur le bouton en haut à droite de la fenêtre pour la cacher
-- L’icône disparaît du Dock et reste uniquement dans la barre de menu
-- Depuis l’icône Menu Bar, vous pouvez :
-  - lancer / arrêter l’enregistrement
-  - lancer / arrêter la lecture
-  - réafficher la fenêtre
-  - quitter l’application
+Without these permissions:
+- recording / playback will not work
+- global hotkeys may be blocked
 
 ---
 
-## Architecture du code
+## Usage
 
-**Côté app (Swift / SwiftUI) :**
+### Record a sequence
+
+1. Launch the app
+2. Click **Record** or press `⌘⇧R`
+3. Perform your mouse + keyboard actions
+4. Click **Record** again or press `⌘⇧R` to stop  
+   → the number of recorded events appears in the UI / menu bar.
+
+### Configure playback
+
+- **Speed**: choose x1, x2, x3 or x5
+- **Repeat**:
+  - `Once`: single run
+  - `Loop`: infinite loop (manual stop required)
+  - `Custom`: set a number of repetitions (1–99)
+
+### Start playback
+
+1. Ensure you have at least one recording
+2. Click **Play** or press `⌘⇧P`
+3. To stop: click again or press `⌘⇧P` once more
+
+### Menu bar mode
+
+- Click the button at the top right of the window to hide it
+- The Dock icon disappears and only the menu bar icon remains
+- From the menu bar icon, you can:
+  - start / stop recording
+  - start / stop playback
+  - show the window again
+  - quit the app
+
+---
+
+## Code architecture
+
+**App side (Swift / SwiftUI):**
 
 - `MouseRecApp.swift`  
-  Point d’entrée de l’app (`@main`), configuration de l’`AppDelegate` et du `MenuBarManager`.
+  Application entry point (`@main`), sets up `AppDelegate` and `MenuBarManager`.
 
 - `ContentView.swift`  
-  Interface SwiftUI principale :
-  - boutons Record / Play
-  - réglages de vitesse et de répétition
-  - intégration avec `MenuBarManager` et `HotkeyManager`
+  Main SwiftUI interface:
+  - Record / Play buttons
+  - speed and repeat controls
+  - integration with `MenuBarManager` and `HotkeyManager`
 
 - `EventRecorder.swift`  
-  Cœur métier :
-  - création d’un **CGEventTap** via `CFMachPort` pour capturer les événements globaux
-  - stockage des événements (`RecordedEvent`)
-  - logique de **replay** (timing, vitesse, boucles)
-  - filtrage des hotkeys (`⌘⇧R`, `⌘⇧P`) pour ne pas les rejouer
+  Core logic:
+  - creates a **CGEventTap** via `CFMachPort` to capture global events
+  - stores events as `RecordedEvent`
+  - playback timing / speed / looping
+  - filters hotkeys (`⌘⇧R`, `⌘⇧P`) so they are not replayed
 
 - `HotkeyManager.swift`  
-  Gestion des raccourcis clavier globaux (via APIs type Carbon / EventHotKey) et callbacks vers `ContentView`.
+  Manages global keyboard shortcuts (Carbon / EventHotKey‑style APIs) and calls back into `ContentView`.
 
 - `MenuBarManager.swift`  
-  Gestion de l’icône de barre de menu :
-  - création du status item
-  - mise à jour des menus et états (recording / playing / idle)
-  - gestion de l’affichage / masquage de la fenêtre principale
+  Handles the menu bar icon:
+  - creates the status item
+  - updates menus and state (recording / playing / idle)
+  - shows / hides the main window
 
 - `Info.plist`  
-  Descriptions des permissions (Accessibilité, Apple Events si nécessaire), catégorie d’app, etc.
+  Permission descriptions (Accessibility, Apple Events if needed), app category, etc.
 
 - `MouseRec.entitlements`  
-  Capacités de l’app (sandbox désactivé pour autoriser le tap global, etc.).
+  App capabilities (sandbox disabled to allow global event tap, etc.).
 
-Les tests sont dans :
+Tests live in:
 - `MouseRecTests/`
 - `MouseRecUITests/`
 
 ---
 
-## Développement & contributions
+## Development & contributions
 
-- **Lancer les tests** (depuis Xcode) :
-  - `Cmd + U` sur la cible `MouseRecTests` ou `MouseRecUITests`
-- **Style de code** :
-  - Swift 5, SwiftUI pour l’UI
-  - Préférence pour les types explicites et les noms clairs
-  - Pas de commentaires redondants : uniquement pour expliquer des choix non évidents (ex : gestion du `CFMachPort`, cycle de vie du tap, etc.)
+- **Run tests** (from Xcode):
+  - `Cmd + U` on the `MouseRecTests` or `MouseRecUITests` target
+- **Code style**:
+  - Swift 5, SwiftUI for UI
+  - Prefer explicit types and clear names
+  - Avoid redundant comments; use comments to explain non‑obvious choices (e.g. `CFMachPort` lifecycle, event tap behavior, etc.)
 
-Si vous voulez contribuer :
+If you want to contribute:
 
-- Ouvrez une **issue** pour discuter d’une fonctionnalité / bug
-- Forkez le repo, créez une branche (`feature/...` ou `fix/...`)
-- Ouvrez une **Pull Request** avec une description claire (FR ou EN)
-
----
-
-## Sécurité & responsabilités
-
-MouseRec capture et rejoue des événements globaux, ce qui peut inclure :
-- des frappes clavier potentiellement sensibles
-- des clics dans d’autres apps
-
-Utilisation recommandée :
-- uniquement sur vos propres machines
-- éviter de partager des séquences contenant des données sensibles
-- vérifier le code / binaire avant de l’exécuter en environnement de production
+- Open an **issue** to discuss a feature / bug
+- Fork the repo, create a branch (`feature/...` or `fix/...`)
+- Open a **Pull Request** with a clear description
 
 ---
 
-## Licence
+## Security & responsibility
 
-Projet personnel de **Stanislas Peridy**.  
-Utilisation à vos propres risques.  
-Vous pouvez cloner et utiliser le projet pour un usage personnel ou pour l’étudier ; pour une redistribution ou un usage commercial, ouvrez d’abord une issue ou contactez l’auteur.
+MouseRec records and replays global events, which can include:
+- potentially sensitive keystrokes
+- clicks in other apps
+
+Recommended usage:
+- only on machines you control
+- avoid sharing recordings that contain sensitive data
+- review the code / binary before running it in production environments
+
+---
+
+## License
+
+Personal project by **Stanislas Peridy**.  
+Use at your own risk.  
+You may clone and use the project for personal use or learning; for redistribution or commercial use, please open an issue or contact the author first.
